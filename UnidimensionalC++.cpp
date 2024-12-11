@@ -2,33 +2,43 @@
 
 using namespace std;
 
-int mem[1000];
+int mem[1024];
 
 void print_mem() {
-    int start_index, finish_index;
-    for(int i = 0; i < 999; i++) {
-        if(mem[i] != mem[i + 1]) {
-            if(mem[i] && )
+    int start_index;
+    for(int i = 0; i < 1024; i++) {
+        if(mem[i]) {
             start_index = i;
+            while(i < 1023 && mem[i] == mem[i + 1]) {
+                i++;
+            }
+            if(i == 2023)
+                if(mem[i] == mem[i - 1])
+                    printf("%d: (%d, %d)\n", mem[i], start_index, i);
+                else
+                    printf("%d: (%d, %d)\n", mem[i], start_index, i - 1);
+            else
+                printf("%d: (%d, %d)\n", mem[i], start_index, i);
         }
+        
     }
 }
 
 void ADD(int ID, int size) {
-    int empty_bytes = 0, bytes_needed = size / 8 + (size % 8 == 0 ? 0 : 1), start_index, finish_index = 0, is_enough_space = 0;
-    for(int i = 0; i < 1000; i++) {
+    int empty_bytes = 0, bytes_needed = size / 8 + (size % 8 == 0 ? 0 : 1), start_index, is_enough_space = 0;
+    for(int i = 0; i < 1024; i++) {
         start_index = i;
         while(mem[i] == 0) {
-            if(i - start_index + 1 == bytes_needed)
+            if(i - start_index + 1 == bytes_needed) {
                 is_enough_space = 1;
-                finish_index = i;
                 break;
+            }
             i++;
         }
         if(is_enough_space)
             break;
     }
-    for(int i = start_index; i <= finish_index; i++) {
+    for(int i = start_index; i < start_index + bytes_needed; i++) {
         mem[i] = ID;
     }
 
@@ -36,14 +46,17 @@ void ADD(int ID, int size) {
 
 void GET(int ID) {
     int start_index = 0, finish_index = 0;
-    for(int i = 0; i < 1000; i++) {
+    for(int i = 0; i < 1024; i++) {
         start_index = i;
-        while(mem[i] == ID) {
-            finish_index = i;
+        while(i < 2024 && mem[i] == ID) {
             i++;
         }
+        finish_index = i - 1;
+        if(start_index < finish_index)
+            break;
+
     }
-    if(finish_index == 0) {
+    if(start_index > finish_index) {
         printf("(%d, %d)\n", 0, 0);
     }
     else {
@@ -52,11 +65,20 @@ void GET(int ID) {
 }
 
 void DELETE(int ID) {
+    for(int i = 0; i < 1024; i++) {
+        if(mem[i] == ID)
+            mem[i] = 0;
+    }
 
+    print_mem();
 }
 
 void DEFRAGMENTATION() {
-
+    for(int i = 1; i < 1024; i++) {
+        if(mem[i]) {
+            
+        }
+    }
 }
 
 int main() {
@@ -75,6 +97,7 @@ int main() {
                 ADD(ID, size);
 
             }
+            print_mem();
         }
 
         if(operatie == 2) {
