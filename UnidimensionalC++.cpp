@@ -12,23 +12,18 @@ void print_mem() {
             while(i < 1023 && mem[i] == mem[i + 1]) {
                 i++;
             }
-            if(i == 2023)
-                if(mem[i] == mem[i - 1])
-                    printf("%d: (%d, %d)\n", mem[i], start_index, i);
-                else
-                    printf("%d: (%d, %d)\n", mem[i], start_index, i - 1);
-            else
-                printf("%d: (%d, %d)\n", mem[i], start_index, i);
+                
+            printf("%d: (%d, %d)\n", mem[i], start_index, i);
         }
         
     }
 }
 
 void ADD(int ID, int size) {
-    int empty_bytes = 0, bytes_needed = size / 8 + (size % 8 == 0 ? 0 : 1), start_index, is_enough_space = 0;
+    int bytes_needed = size / 8 + (size % 8 == 0 ? 0 : 1), start_index, is_enough_space = 0;
     for(int i = 0; i < 1024; i++) {
         start_index = i;
-        while(mem[i] == 0) {
+        while(mem[i] == 0 && i < 1024) {
             if(i - start_index + 1 == bytes_needed) {
                 is_enough_space = 1;
                 break;
@@ -38,17 +33,26 @@ void ADD(int ID, int size) {
         if(is_enough_space)
             break;
     }
-    for(int i = start_index; i < start_index + bytes_needed; i++) {
-        mem[i] = ID;
+    if(is_enough_space) {
+        for(int i = start_index; i < start_index + bytes_needed; i++) {
+            mem[i] = ID;
+        }
     }
+    else {
+        start_index = 0;
+        bytes_needed = 1;
+    }
+
+    printf("%d: (%d, %d)\n", ID, start_index, start_index + bytes_needed - 1);
+    
 
 }
 
 void GET(int ID) {
-    int start_index = 0, finish_index = 0;
+    int start_index = 0, finish_index;
     for(int i = 0; i < 1024; i++) {
         start_index = i;
-        while(i < 2024 && mem[i] == ID) {
+        while(i < 1024 && mem[i] == ID) {
             i++;
         }
         finish_index = i - 1;
@@ -74,11 +78,20 @@ void DELETE(int ID) {
 }
 
 void DEFRAGMENTATION() {
-    for(int i = 1; i < 1024; i++) {
-        if(mem[i]) {
-            
+    for(int i = 0; i < 1023; i++) {
+        if(!mem[i]) {
+            for(int j = i + 1; j < 1024; j++) {
+                if(mem[j]) {
+                    mem[i] = mem[j];
+                    mem[j] = 0;
+                    break;
+                }
+            }
+            if(!mem[i])
+                break;
         }
     }
+    print_mem();
 }
 
 int main() {
@@ -97,7 +110,7 @@ int main() {
                 ADD(ID, size);
 
             }
-            print_mem();
+            //print_mem();
         }
 
         if(operatie == 2) {
@@ -115,6 +128,7 @@ int main() {
         }
 
     }
+    print_mem();
 
     return 0;
 }
