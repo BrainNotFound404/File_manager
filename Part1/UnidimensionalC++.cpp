@@ -20,7 +20,7 @@ void print_mem() {
 }
 
 void ADD(int ID, int size) {
-    int bytes_needed = size / 8 + (size % 8 == 0 ? 0 : 1), start_index, is_enough_space = 0;
+    int bytes_needed = (size + 7) / 8, start_index, is_enough_space = 0;
     for(int i = 0; i < 1024; i++) {
         start_index = i;
         while(mem[i] == 0 && i < 1024) {
